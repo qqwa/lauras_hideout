@@ -36,6 +36,7 @@ defmodule LaurasHideout.MixProject do
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},
+      {:ecto_psql_extras, "~> 0.6"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.19.0"},
@@ -47,7 +48,9 @@ defmodule LaurasHideout.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      {:dotenv_parser, "~> 2.0"},
+      {:req, "~> 0.4.0"}
     ]
   end
 

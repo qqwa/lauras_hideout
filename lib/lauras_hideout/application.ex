@@ -33,4 +33,8 @@ defmodule LaurasHideout.Application do
     LaurasHideoutWeb.Endpoint.config_change(changed, removed)
     :ok
   end
+
+  def version() do
+    Application.spec(:lauras_hideout, :vsn) |> to_string()
+  end
 end

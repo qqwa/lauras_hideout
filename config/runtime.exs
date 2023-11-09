@@ -16,6 +16,15 @@ import Config
 #
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.
+if config_env() == :dev do
+  DotenvParser.load_file(".env")
+end
+
+config :lauras_hideout,
+  client_id: System.get_env("CLIENT_ID"),
+  client_secret: System.get_env("CLIENT_SECRET"),
+  redirect_url: System.get_env("REDIRECT_URL")
+
 if System.get_env("PHX_SERVER") do
   config :lauras_hideout, LaurasHideoutWeb.Endpoint, server: true
 end

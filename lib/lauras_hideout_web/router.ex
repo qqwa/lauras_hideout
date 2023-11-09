@@ -1,6 +1,8 @@
 defmodule LaurasHideoutWeb.Router do
   use LaurasHideoutWeb, :router
 
+  import LaurasHideoutWeb.Auth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -8,6 +10,7 @@ defmodule LaurasHideoutWeb.Router do
     plug :put_root_layout, html: {LaurasHideoutWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_user
   end
 
   pipeline :api do
@@ -18,6 +21,13 @@ defmodule LaurasHideoutWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/oauth/poe", OAuth, :init_oauth_authorization
+    get "/auth/callback", OAuth, :callback
+    delete "/logout", OAuth, :logout
+  end
+
+  scope "/", LaurasHideoutWeb do
+    pipe_through [:browser, :require_user]
   end
 
   # Other scopes may use custom stacks.

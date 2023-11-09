@@ -1,16 +1,21 @@
 <header class="px-4 sm:px-6 lg:px-8 bg-teal-500 flex justify-between">
   <div>
-    <h2 class="text-2xl font-bold p-4"><a href="/"></a>LaurasHideout</h2>
+    <h2 class="text-2xl font-bold p-4"><.link href="/">LaurasHideout</.link></h2>
   </div>
   <nav class="flex items-center">
     <ul class="list-none flex">
-      <%= if false do %>
-        <li>
-          Connected as ...
+      <%= if @current_user do %>
+        <li class="p-1 mx-2">
+          Connected as <%= @current_user.username %>
+        </li>
+        <li class="border-2 p-1 mx-2 border-indigo-500 rounded-md">
+          <.link href={~p"/logout"} method="delete">
+            Logout
+          </.link>
         </li>
       <% else %>
         <li class="border-2 p-1 border-indigo-500 rounded-md">
-          <a href={~p"/oauth/poe"}>Connect with Path of Exile</a>
+          <.link href={~p"/oauth/poe"}>Connect with Path of Exile</.link>
         </li>
       <% end %>
     </ul>
