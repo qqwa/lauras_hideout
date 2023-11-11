@@ -21,6 +21,7 @@ if config_env() == :dev do
 end
 
 config :lauras_hideout,
+  service_token: System.get_env("SERVICE_TOKEN"),
   client_id: System.get_env("CLIENT_ID"),
   client_secret: System.get_env("CLIENT_SECRET"),
   redirect_url: System.get_env("REDIRECT_URL")

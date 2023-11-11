@@ -12,9 +12,6 @@ defmodule LaurasHideout.Accounts do
   Handels OAuth Flow
   """
 
-  @base_url "https://www.pathofexile.com/oauth/authorize?"
-  @access_token_url "https://www.pathofexile.com/oauth/token"
-
   @doc """
   Generates the redirect url to start OAuth2 Flow
 
@@ -36,7 +33,11 @@ defmodule LaurasHideout.Accounts do
   # https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.3
   def access_token_request(params) do
     with {:ok, challenge} <- get_challenge(params["state"]),
-         {:ok, response} <- request_access_token(params["code"], challenge.code_verifier),
+         {:ok, response} <-
+           PoeApi.OAuth.get_access_token(%{
+             code: params["code"],
+             code_verifier: challenge.code_verifier
+           }),
          {:ok, access_token_map} <- handle_access_token_response(response),
          {:ok, user} <- get_or_create_user(access_token_map),
          {:ok, _} <- save_access_token(user, access_token_map) do
@@ -105,8 +106,7 @@ defmodule LaurasHideout.Accounts do
     Repo.delete(session)
   end
 
-
-  def get_or_create_user(%{"username" => username}=map) do
+  def get_or_create_user(%{"username" => username} = map) do
     user = Repo.get_by(User, username: username)
 
     if user == nil do
@@ -140,7 +140,7 @@ defmodule LaurasHideout.Accounts do
       {:ok,
        %Challenge{}
        |> Challenge.changeset(challenge_map)
-       |> Repo.insert(
+       |> Repo.insert!(
          on_conflict: [
            set: [
              code_challenge: challenge_map.code_challenge,
@@ -162,38 +162,20 @@ defmodule LaurasHideout.Accounts do
     %{code_verifier: code_verifier, code_challenge: code_challenge}
   end
 
-  defp request_access_token(code, code_verifier) do
-    form_map = access_token_form_map(code, code_verifier)
-
-    PoeApi.client(@access_token_url)
-    |> Req.post(form: Map.to_list(form_map))
-  end
-
   # https://www.pathofexile.com/developer/docs/authorization#grants
   defp authorization_url(challenge) do
-    @base_url <> authorization_url_query(challenge)
+    PoeApi.OAuth.authorize_url() <> "?" <> authorization_url_query(challenge)
   end
 
   defp authorization_url_query(challenge) do
     %{}
     |> Map.put(:client_id, Application.get_env(:lauras_hideout, :client_id))
     |> Map.put(:response_type, "code")
-    |> Map.put(:scope, "account:profile")
+    |> Map.put(:scope, PoeApi.OAuth.account_scopes())
     |> Map.put(:state, challenge.state)
     |> Map.put(:redirect_uri, Application.get_env(:lauras_hideout, :redirect_url))
     |> Map.put(:code_challenge, challenge.code_challenge)
     |> Map.put(:code_challenge_method, "S256")
     |> URI.encode_query()
-  end
-
-  defp access_token_form_map(code, code_verifier) do
-    %{}
-    |> Map.put(:client_id, Application.get_env(:lauras_hideout, :client_id))
-    |> Map.put(:client_secret, Application.get_env(:lauras_hideout, :client_secret))
-    |> Map.put(:grant_type, "authorization_code")
-    |> Map.put(:code, code)
-    |> Map.put(:redirect_uri, Application.get_env(:lauras_hideout, :redirect_url))
-    |> Map.put(:scope, "account:profile")
-    |> Map.put(:code_verifier, code_verifier)
   end
 end

@@ -15,9 +15,10 @@ defmodule LaurasHideout.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: LaurasHideout.PubSub},
       # Start the Endpoint (http/https)
-      LaurasHideoutWeb.Endpoint
+      LaurasHideoutWeb.Endpoint,
       # Start a worker by calling: LaurasHideout.Worker.start_link(arg)
       # {LaurasHideout.Worker, arg}
+      LaurasHideout.PoeApi.RateLimitsList
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

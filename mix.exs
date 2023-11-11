@@ -19,7 +19,7 @@ defmodule LaurasHideout.MixProject do
   def application do
     [
       mod: {LaurasHideout.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :ex_rated]
     ]
   end
 
@@ -50,6 +50,7 @@ defmodule LaurasHideout.MixProject do
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:dotenv_parser, "~> 2.0"},
+      {:ex_rated, "~> 2.1"},
       {:req, "~> 0.4.0"}
     ]
   end

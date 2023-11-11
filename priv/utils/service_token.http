@@ -1,0 +1,14 @@
+# Allows to fetch service token for poe api, using the VS Code extension REST Client
+# replace the ".." for client_id and client_secret with the actual values
+
+@client_id = ..
+@client_secret = ..
+
+###
+POST https://www.pathofexile.com/oauth/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id={{client_id}}
+&client_secret={{client_secret}}
+&grant_type=client_credentials
+&scope=service:psapi
