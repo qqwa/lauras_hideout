@@ -1,4 +1,7 @@
 defmodule LaurasHideout.PoeApi.Utils do
+  require Logger
+  alias LaurasHideout.Repo
+  alias LaurasHideout.PoeApi.Log
   alias LaurasHideout.PoeApi.RateLimit
   alias LaurasHideout.PoeApi.RateLimitsList
 
@@ -19,38 +22,58 @@ defmodule LaurasHideout.PoeApi.Utils do
     |> Req.Request.merge_options(auth: {:bearer, token})
   end
 
-  def get_endpoint(endpoint, token, request) do
-    with {:ok, update_rate_limits} <- check_rate_limits(endpoint, token),
+  def get_endpoint(endpoint, user, request) do
+    with {:ok, update_rate_limits} <- check_rate_limits(endpoint, user.token),
          {:ok, response} <- request.() do
       # post request tasks
       update_rate_limits.(response.headers)
+      log_response(endpoint, user, response)
       {:ok, response}
     end
   end
 
+  def log_response(endpoint, user, response) do
+    metadata = %{username: user.username, endpoint: endpoint, status: response.status}
+
+    case response.status do
+      status when status in [200, 202] ->
+        %Log{}
+        |> Log.changeset(metadata)
+        |> Repo.insert()
+
+      _ ->
+        metadata = Map.put(metadata, :message, "#{response}")
+
+        %Log{}
+        |> Log.changeset(metadata)
+        |> Repo.insert()
+    end
+  end
 
   # returns a function that will take the headers of the response to eventually
   # update the rate limits
   defp check_rate_limits(endpoint, token) do
     rate_limits = RateLimitsList.get_rate_limits(endpoint)
+
     if rate_limits do
       if Enum.all?(rate_limits, fn rate_limit -> check_rate_limit(rate_limit, token) end) do
-        {:ok, fn headers ->
-          new_rate_limits = RateLimit.get_rate_limits_from_headers(headers)
-          RateLimitsList.maybe_update_rate_limits(endpoint, new_rate_limits)
-        end}
+        {:ok,
+         fn headers ->
+           new_rate_limits = RateLimit.get_rate_limits_from_headers(headers)
+           RateLimitsList.maybe_update_rate_limits(endpoint, new_rate_limits)
+         end}
       else
         {:error, "Rate limited would be hit"}
       end
     else
-      {:ok, fn headers ->
-        new_rate_limits = RateLimit.get_rate_limits_from_headers(headers)
-        RateLimitsList.maybe_update_rate_limits(endpoint, new_rate_limits)
-        Enum.each(new_rate_limits, fn rate_limit -> check_rate_limit(rate_limit, token) end)
-      end}
+      {:ok,
+       fn headers ->
+         new_rate_limits = RateLimit.get_rate_limits_from_headers(headers)
+         RateLimitsList.maybe_update_rate_limits(endpoint, new_rate_limits)
+         Enum.each(new_rate_limits, fn rate_limit -> check_rate_limit(rate_limit, token) end)
+       end}
     end
   end
-
 
   def check_rate_limit(%RateLimit{} = rate_limit, token) do
     case ExRated.check_rate(
