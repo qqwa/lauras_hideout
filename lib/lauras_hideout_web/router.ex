@@ -21,8 +21,8 @@ defmodule LaurasHideoutWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
-    get "/oauth/poe", OAuth, :init_oauth_authorization
-    get "/auth/callback", OAuth, :callback
+    get "/auth/poe", OAuth, :init_oauth_authorization
+    get "/auth/callback/poe", OAuth, :callback
     delete "/logout", OAuth, :logout
   end
 
