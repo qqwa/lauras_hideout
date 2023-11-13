@@ -98,6 +98,14 @@ defmodule LaurasHideout.Accounts do
     Repo.preload(session.user, :access_token)
   end
 
+  def get_user_by_username(username) do
+    user =
+      Repo.get_by(User, username: username)
+      |> Repo.preload(:access_token)
+
+    %{username: user.username, token: user.access_token.token["access_token"], id: user.id}
+  end
+
   def get_session(session_id) do
     Repo.get(Session, session_id)
   end
