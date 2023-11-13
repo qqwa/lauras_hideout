@@ -5,11 +5,10 @@ defmodule LaurasHideout.StashManagement do
   alias LaurasHideout.Accounts.User
 
   def request_account_stashes(user, league) do
-    with {:ok, reponse} <- PoeApi.get_account_stashes(user, league) do
-      extract_account_stashes(reponse.body, user, league)
-      |> insert_or_update_account_stashes()
-
-      get_stashes(user.id)
+    with {:ok, reponse} <- PoeApi.get_account_stashes(user, league),
+         stashes <- extract_account_stashes(reponse.body, user, league),
+         {:ok, _} <- insert_or_update_account_stashes(stashes) do
+      {:ok, convert_account_stashes(stashes)}
     end
   end
 
@@ -36,6 +35,16 @@ defmodule LaurasHideout.StashManagement do
       stash
       |> Map.put("user_id", user.id)
       |> Map.put("league", league)
+    end)
+  end
+
+  def convert_account_stashes(stashes) do
+    Enum.map(stashes, fn stash ->
+      changeset =
+        %AccountStash{}
+        |> AccountStash.changeset(stash)
+
+      changeset.changes
     end)
   end
 
