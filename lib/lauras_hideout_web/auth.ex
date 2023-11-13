@@ -85,7 +85,7 @@ defmodule LaurasHideoutWeb.Auth do
   Used for routes that require the user to be logged in.
   """
   def require_user(conn, _opts) do
-    if conn.assigns[:current_user] do
+    if conn.assigns.current_user do
       conn
     else
       conn
@@ -93,5 +93,28 @@ defmodule LaurasHideoutWeb.Auth do
       |> redirect(to: ~p"/")
       |> halt()
     end
+  end
+
+  def on_mount(:ensure_user, _params, session, socket) do
+    socket = mount_current_user(socket, session)
+
+    if socket.assigns.current_user do
+      {:cont, socket}
+    else
+      socket =
+        socket
+        |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
+        |> Phoenix.LiveView.redirect(to: ~p"/")
+
+      {:halt, socket}
+    end
+  end
+
+  defp mount_current_user(socket, session) do
+    Phoenix.Component.assign_new(socket, :current_user, fn ->
+      if session_id = session["session_id"] do
+        Accounts.get_user_with_access_token_by_session(session_id)
+      end
+    end)
   end
 end

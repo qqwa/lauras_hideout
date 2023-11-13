@@ -1,6 +1,15 @@
 <header class="px-4 sm:px-6 lg:px-8 bg-teal-500 flex justify-between">
-  <div>
+  <div class="flex items-center list-none gap-4">
     <h2 class="text-2xl font-bold p-4"><.link href="/">LaurasHideout</.link></h2>
+    <%= if @current_user do %>
+      <nav class="flex">
+        <li class="border-2 p-1 mx-2 border-indigo-500 rounded-md">
+          <.link href={~p"/stash"}>
+            Stash
+          </.link>
+        </li>
+      </nav>
+    <% end %>
   </div>
   <nav class="flex items-center">
     <ul class="list-none flex">
