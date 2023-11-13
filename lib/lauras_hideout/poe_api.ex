@@ -6,13 +6,14 @@ defmodule LaurasHideout.PoeApi do
   """
   def get_leagues() do
     endpoint = "/league"
+    user = service_token()
 
     request = fn ->
-      client_with_token(service_token())
+      client_with_token(user.token)
       |> Req.get(url: endpoint)
     end
 
-    get_endpoint(endpoint, service_token(), request)
+    get_endpoint(endpoint, user, request)
   end
 
   @doc """
@@ -20,13 +21,14 @@ defmodule LaurasHideout.PoeApi do
   """
   def get_public_stash_tabs(id \\ "") do
     endpoint = "/public-stash-tabs/id"
+    user = service_token()
 
     request = fn ->
-      client_with_token(service_token())
+      client_with_token(user.token)
       |> Req.get(url: "#{endpoint}?id=#{id}")
     end
 
-    get_endpoint(endpoint, service_token(), request)
+    get_endpoint(endpoint, user, request)
   end
 
   @doc """

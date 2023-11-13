@@ -102,5 +102,9 @@ defmodule LaurasHideout.PoeApi.Utils do
     end
   end
 
-  def service_token(), do: Application.get_env(:lauras_hideout, :service_token)
+  def service_token(),
+    do: %{
+      username: "__service_token__",
+      token: Application.get_env(:lauras_hideout, :service_token)
+    }
 end
