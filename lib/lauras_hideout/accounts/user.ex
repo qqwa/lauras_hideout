@@ -11,6 +11,7 @@ defmodule LaurasHideout.Accounts.User do
     timestamps()
     has_one :access_token, Accounts.AccessToken
     has_many :session, Accounts.Session
+    has_many :account_stash, LaurasHideout.StashManagement.AccountStash
   end
 
   @doc false

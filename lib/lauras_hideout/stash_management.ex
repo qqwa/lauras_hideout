@@ -2,11 +2,14 @@ defmodule LaurasHideout.StashManagement do
   alias LaurasHideout.PoeApi
   alias LaurasHideout.StashManagement.AccountStash
   alias LaurasHideout.Repo
+  alias LaurasHideout.Accounts.User
 
   def request_account_stashes(user, league) do
     with {:ok, reponse} <- PoeApi.get_account_stashes(user, league) do
       extract_account_stashes(reponse.body, user, league)
       |> insert_or_update_account_stashes()
+
+      get_stashes(user.id)
     end
   end
 
@@ -51,8 +54,12 @@ defmodule LaurasHideout.StashManagement do
         Ecto.Multi.insert_or_update(multi, stash["id"], changeset)
       end)
 
-    IO.inspect(Ecto.Multi.to_list(multi))
     Repo.transaction(multi)
-    stashes
+  end
+
+  def get_stashes(user_id) do
+    %User{id: user_id}
+    |> Ecto.assoc(:account_stash)
+    |> Repo.all()
   end
 end

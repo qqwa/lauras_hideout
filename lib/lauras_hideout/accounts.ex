@@ -95,7 +95,8 @@ defmodule LaurasHideout.Accounts do
         preload: :user
 
     session = Repo.one(query)
-    Repo.preload(session.user, :access_token)
+    user = Repo.preload(session.user, :access_token)
+    %{username: user.username, token: user.access_token.token["access_token"], id: user.id}
   end
 
   def get_user_by_username(username) do

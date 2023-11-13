@@ -1,6 +1,7 @@
 defmodule LaurasHideout.StashManagement.AccountStash do
   use Ecto.Schema
   import Ecto.Changeset
+  alias LaurasHideout.Accounts
 
   @primary_key false
   @foreign_key_type :binary_id
@@ -12,7 +13,7 @@ defmodule LaurasHideout.StashManagement.AccountStash do
     field :metadata, :map
     field :name, :string
     field :type, :string
-    field :user_id, :binary_id
+    belongs_to :user, Accounts.User
 
     timestamps()
   end

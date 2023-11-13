@@ -1,1 +1,11 @@
 <h2 class="text-2xl font-bold">Stash Management</h2>
+
+<button class="border-indigo-500 border-2 p-1" phx-click="load_stashes">Load stashes</button>
+
+<%= for stash <- @account_stashes do %>
+  <div><%= stash.name %></div>
+<% end %>
+
+<pre>
+    <%= inspect(@current_user, pretty: true) %>
+</pre>
