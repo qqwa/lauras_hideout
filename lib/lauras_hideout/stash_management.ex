@@ -3,6 +3,7 @@ defmodule LaurasHideout.StashManagement do
   alias LaurasHideout.StashManagement.AccountStash
   alias LaurasHideout.Repo
   alias LaurasHideout.Accounts.User
+  import Ecto.Query
 
   def request_account_stashes(user, league) do
     with {:ok, reponse} <- PoeApi.get_account_stashes(user, league),
@@ -67,8 +68,11 @@ defmodule LaurasHideout.StashManagement do
   end
 
   def get_stashes(user_id) do
-    %User{id: user_id}
-    |> Ecto.assoc(:account_stash)
-    |> Repo.all()
+    query =
+      from a in AccountStash,
+        where: a.user_id == ^user_id,
+        order_by: a.index
+
+    Repo.all(query)
   end
 end

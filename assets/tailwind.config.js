@@ -11,10 +11,42 @@ module.exports = {
     "../lib/*_web.ex",
     "../lib/*_web/**/*.*ex"
   ],
+  safelist: [
+    {
+      pattern: /bg-+/, // 👈  This includes bg of all colors and shades
+    },
+  ],
   theme: {
     extend: {
       colors: {
         brand: "#FD4F00",
+        '7c5436': "#7c5436",
+        '590000': "#590000",
+        '730055': "#730055",
+        '2c0059': "#2c0059",
+        '80': "#000080",
+        '4d00': "#004d00",
+        '638000': "#638000",
+        'ffaa00': "#ffaa00",
+        '323232': "#323232",
+        'bf5e00': "#bf5e00",
+        'bf0000': "#bf0000",
+        'cc009a': "#cc009a",
+        '5a00b3': "#5a00b3",
+        'ff': "#0000ff",
+        'bf00': "#00bf00",
+        'bff500': "#bff500",
+        'ffd500': "#ffd500",
+        '888888': "#888888",
+        'ffbf80': "#ffbf80",
+        'ff8080': "#ff8080",
+        'ff80df': "#ff80df",
+        'c080ff': "#c080ff",
+        '80b3ff': "#80b3ff",
+        '80ff80': "#80ff80",
+        'f0ff80': "#f0ff80",
+        'ffff99': "#ffff99",
+        'dddddd': "#dddddd"
       }
     },
   },

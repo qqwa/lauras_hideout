@@ -2,9 +2,11 @@
 
 <button class="border-indigo-500 border-2 p-1" phx-click="load_stashes">Load stashes</button>
 
-<%= for stash <- @account_stashes do %>
-  <div><%= stash.name %></div>
-<% end %>
+<div>
+  <%= for stash <- @account_stashes do %>
+    <div class={stash.colour}><%= stash.name %></div>
+  <% end %>
+</div>
 
 <pre>
     <%= inspect(@current_user, pretty: true) %>
