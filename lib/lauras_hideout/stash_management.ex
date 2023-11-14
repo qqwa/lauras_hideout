@@ -67,10 +67,11 @@ defmodule LaurasHideout.StashManagement do
     Repo.transaction(multi)
   end
 
-  def get_stashes(user_id) do
+  def get_stashes(user_id, league) do
     query =
       from a in AccountStash,
         where: a.user_id == ^user_id,
+        where: a.league == ^league,
         order_by: a.index
 
     Repo.all(query)

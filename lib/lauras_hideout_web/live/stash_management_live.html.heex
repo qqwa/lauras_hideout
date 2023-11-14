@@ -1,10 +1,11 @@
 <h2 class="text-2xl font-bold">Stash Management</h2>
+<p>Selected League: <%= @selected_league %></p>
 
 <button class="border-indigo-500 border-2 p-1" phx-click="load_stashes">Load stashes</button>
 
 <div>
   <%= for stash <- @account_stashes do %>
-    <div class={stash.colour}><%= stash.name %></div>
+    <div class={stash.color_class}><%= stash.name %></div>
   <% end %>
 </div>
 
