@@ -3,12 +3,20 @@
 
 <button class="border-indigo-500 border-2 p-1" phx-click="load_stashes">Load stashes</button>
 
-<div>
-  <%= for stash <- @account_stashes do %>
-    <div class={stash.color_class}><%= stash.name %></div>
+<div class="flex overflow-x-auto border-2">
+  <%= if @account_stashes do %>
+    <%= for stash <- @account_stashes do %>
+      <div class={["flex-shrink-0 pb-4 border-l-2 px-2", stash.color_class]}>
+        <.link patch={~p"/stash?stash=#{stash["id"]}"}>
+          <%= stash["name"] %>
+        </.link>
+      </div>
+    <% end %>
   <% end %>
 </div>
 
-<pre>
-    <%= inspect(@current_user, pretty: true) %>
-</pre>
+<%= if @stash do %>
+  <pre>
+    <%= inspect(@stash, pretty: true) %>
+  </pre>
+<% end %>

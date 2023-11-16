@@ -6,7 +6,6 @@ defmodule LaurasHideout.PoeApi.RateLimitsList do
   """
 
   def start_link(default) do
-    IO.inspect(default)
     GenServer.start_link(__MODULE__, default, name: __MODULE__)
   end
 

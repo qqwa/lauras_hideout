@@ -6,16 +6,33 @@ defmodule LaurasHideoutWeb.StashManagementLive do
     socket = assign_selected_league(socket)
 
     stashes =
-      StashManagement.get_stashes(socket.assigns.current_user.id, socket.assigns.selected_league)
+      StashManagement.get_stash_infos(
+        socket.assigns.current_user.id,
+        socket.assigns.selected_league
+      )
 
     {:ok,
      socket
-     |> assign_account_stashes(stashes)}
+     |> assign_account_stashes(stashes)
+     |> assign(:stash, nil)}
+  end
+
+  def handle_params(%{"stash" => id}, _uri, socket) do
+    stash =
+      Enum.filter(socket.assigns.account_stashes, fn stash ->
+        stash["id"] == id
+      end)
+
+    {:noreply, assign(socket, :stash, stash)}
+  end
+
+  def handle_params(_params, _uri, socket) do
+    {:noreply, socket}
   end
 
   def handle_event("load_stashes", _params, socket) do
     if {:ok, stashes} =
-         StashManagement.request_account_stashes(
+         StashManagement.refresh_account_stashes(
            socket.assigns.current_user,
            socket.assigns.selected_league
          ) do
@@ -39,7 +56,7 @@ defmodule LaurasHideoutWeb.StashManagementLive do
 
   defp put_colour_atom_into_stashes(stashes) do
     Enum.map(stashes, fn stash ->
-      Map.put(stash, :color_class, "bg-" <> stash.metadata["colour"])
+      Map.put(stash, :color_class, "bg-" <> stash["metadata"]["colour"])
     end)
   end
 end
