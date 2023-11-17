@@ -15,8 +15,8 @@ defmodule LaurasHideout.StashManagement do
   def refresh_account_stash(user, league, id) do
     with {:ok, response} <- PoeApi.get_account_stash(user, league, id),
          items <- extract_items(response.body),
-         {:ok, _} <- insert_or_update_account_stash(user, league, id, items) do
-      {:ok, items}
+         {:ok, changeset} <- insert_or_update_account_stash(user, league, id, items) do
+      {:ok, convert_stash_snapshot_changeset(changeset)}
     end
   end
 
@@ -109,7 +109,11 @@ defmodule LaurasHideout.StashManagement do
              where: s.stash_id == ^stash_id
          ) do
       nil -> nil
-      changeset -> %{items: changeset.items, last_refresh: changeset.updated_at}
+      changeset -> convert_stash_snapshot_changeset(changeset)
     end
+  end
+
+  def convert_stash_snapshot_changeset(changeset) do
+    %{items: changeset.items, last_refresh: changeset.updated_at}
   end
 end
