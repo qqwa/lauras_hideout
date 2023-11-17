@@ -20,21 +20,6 @@ defmodule LaurasHideout.StashManagement do
     end
   end
 
-  def extract_items(response_body) do
-    response_body["stash"]["items"]
-  end
-
-  def insert_or_update_account_stash(user, league, id, items) do
-    %AccountStashSnapshot{}
-    |> AccountStashSnapshot.changeset(%{
-      user_id: user.id,
-      league: league,
-      stash_id: id,
-      items: items
-    })
-    |> Repo.insert()
-  end
-
   @doc """
   Flattens any folder with its children and removes folders
   """
@@ -101,6 +86,21 @@ defmodule LaurasHideout.StashManagement do
       nil -> []
       stash_infos -> stash_infos.stashes
     end
+  end
+
+  def extract_items(response_body) do
+    response_body["stash"]["items"]
+  end
+
+  def insert_or_update_account_stash(user, league, id, items) do
+    %AccountStashSnapshot{}
+    |> AccountStashSnapshot.changeset(%{
+      user_id: user.id,
+      league: league,
+      stash_id: id,
+      items: items
+    })
+    |> Repo.insert()
   end
 
   def get_stash_snapshot(stash_id) do

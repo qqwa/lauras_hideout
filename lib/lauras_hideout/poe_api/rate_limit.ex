@@ -61,26 +61,4 @@ defmodule LaurasHideout.PoeApi.RateLimit do
       penality: String.to_integer(penality) * 1000
     }
   end
-
-  @doc """
-  Parses the headers of an PoeApi Reponse to check if a rate limit
-  was triggered.
-
-  Logs the incident for future investigation.
-
-  ## Examples
-
-      iex> RateLimit.rate_limit_triggered?(%{
-      ...> "retry-after" => ["60"]
-      ...> })
-      true
-  """
-  def rate_limit_triggered?(headers) do
-    if Map.has_key?(headers, "retry-after") do
-      # TODO: log incident, and actually use it in get_endpoint
-      true
-    else
-      false
-    end
-  end
 end
