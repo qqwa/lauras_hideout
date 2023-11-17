@@ -1,15 +1,38 @@
 defmodule LaurasHideout.StashManagement do
   alias LaurasHideout.PoeApi
-  alias LaurasHideout.StashManagement.AccountStashInfo
+  alias LaurasHideout.StashManagement.{AccountStashInfo, AccountStashSnapshot}
   alias LaurasHideout.Repo
   import Ecto.Query
 
   def refresh_account_stashes(user, league) do
-    with {:ok, reponse} <- PoeApi.get_account_stashes(user, league),
-         stashes <- extract_account_stashes(reponse.body),
+    with {:ok, response} <- PoeApi.get_account_stashes(user, league),
+         stashes <- extract_account_stashes(response.body),
          {:ok, _} <- insert_or_update_account_stashes(stashes, user, league) do
       {:ok, stashes}
     end
+  end
+
+  def refresh_account_stash(user, league, id) do
+    with {:ok, response} <- PoeApi.get_account_stash(user, league, id),
+         items <- extract_items(response.body),
+         {:ok, _} <- insert_or_update_account_stash(user, league, id, items) do
+      {:ok, items}
+    end
+  end
+
+  def extract_items(response_body) do
+    response_body["stash"]["items"]
+  end
+
+  def insert_or_update_account_stash(user, league, id, items) do
+    %AccountStashSnapshot{}
+    |> AccountStashSnapshot.changeset(%{
+      user_id: user.id,
+      league: league,
+      stash_id: id,
+      items: items
+    })
+    |> Repo.insert()
   end
 
   @doc """
@@ -77,6 +100,16 @@ defmodule LaurasHideout.StashManagement do
     case Repo.one(query) do
       nil -> []
       stash_infos -> stash_infos.stashes
+    end
+  end
+
+  def get_stash_snapshot(stash_id) do
+    case Repo.one(
+           from s in AccountStashSnapshot,
+             where: s.stash_id == ^stash_id
+         ) do
+      nil -> nil
+      changeset -> %{items: changeset.items, last_refresh: changeset.updated_at}
     end
   end
 end

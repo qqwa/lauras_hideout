@@ -1,5 +1,6 @@
 defmodule LaurasHideoutWeb.StashManagementLive do
   alias LaurasHideout.StashManagement
+  alias LaurasHideoutWeb.StashManagementLive
   use LaurasHideoutWeb, :live_view
 
   def mount(_params, _session, socket) do
@@ -19,9 +20,12 @@ defmodule LaurasHideoutWeb.StashManagementLive do
 
   def handle_params(%{"stash" => id}, _uri, socket) do
     stash =
-      Enum.filter(socket.assigns.account_stashes, fn stash ->
-        stash["id"] == id
-      end)
+      case Enum.filter(socket.assigns.account_stashes, fn stash ->
+             stash["id"] == id
+           end) do
+        [] -> nil
+        [stash] -> stash
+      end
 
     {:noreply, assign(socket, :stash, stash)}
   end

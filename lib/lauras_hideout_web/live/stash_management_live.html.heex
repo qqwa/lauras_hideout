@@ -1,22 +1,29 @@
 <h2 class="text-2xl font-bold">Stash Management</h2>
 <p>Selected League: <%= @selected_league %></p>
 
-<button class="border-indigo-500 border-2 p-1" phx-click="load_stashes">Load stashes</button>
-
-<div class="flex overflow-x-auto border-2">
-  <%= if @account_stashes do %>
-    <%= for stash <- @account_stashes do %>
-      <div class={["flex-shrink-0 pb-4 border-l-2 px-2", stash.color_class]}>
-        <.link patch={~p"/stash?stash=#{stash["id"]}"}>
-          <%= stash["name"] %>
-        </.link>
-      </div>
+<div class="my-4">
+  <button class="border-indigo-500 border-2 p-1 my-2" phx-click="load_stashes">
+    Refresh stashes
+  </button>
+  <div class="flex overflow-x-auto border-2">
+    <%= if @account_stashes do %>
+      <%= for stash <- @account_stashes do %>
+        <div class={["flex-shrink-0 pb-4 border-l-2 px-2", stash.color_class]}>
+          <.link patch={~p"/stash?stash=#{stash["id"]}"}>
+            <%= stash["name"] %>
+          </.link>
+        </div>
+      <% end %>
     <% end %>
-  <% end %>
+  </div>
 </div>
 
 <%= if @stash do %>
-  <pre>
-    <%= inspect(@stash, pretty: true) %>
-  </pre>
+  <.live_component
+    module={StashManagementLive.StashView}
+    id="stash_view"
+    stash_info={@stash}
+    current_user={@current_user}
+    league={@selected_league}
+  />
 <% end %>

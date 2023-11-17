@@ -1,5 +1,6 @@
 defmodule LaurasHideout.Accounts.User do
   alias LaurasHideout.Accounts
+  alias LaurasHideout.StashManagement
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -11,7 +12,8 @@ defmodule LaurasHideout.Accounts.User do
     timestamps()
     has_one :access_token, Accounts.AccessToken
     has_many :session, Accounts.Session
-    has_many :account_stash, LaurasHideout.StashManagement.AccountStash
+    has_many :account_stash_info, StashManagement.AccountStashInfo
+    has_many :account_stash_snapshot, StashManagement.AccountStashSnapshot
   end
 
   @doc false
