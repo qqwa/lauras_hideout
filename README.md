@@ -31,6 +31,10 @@ A postgres instance is expected check [dev.exs](config/dev.exs) for mor details.
 
 Run either with `mix phx.server` or `iex -S mix phx.server`
 
+### Release
+
+Check the official [phoenix documentation](https://hexdocs.pm/phoenix/deployment.html).
+
 ## Screenshot
 
 ![StashView](.github/StashView.png)

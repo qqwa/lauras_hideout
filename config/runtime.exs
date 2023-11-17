@@ -16,9 +16,7 @@ import Config
 #
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.
-if config_env() == :dev do
-  DotenvParser.load_file(".env")
-end
+DotenvParser.load_file(".env")
 
 config :lauras_hideout,
   service_token: System.get_env("SERVICE_TOKEN"),
