@@ -11,4 +11,4 @@ Content-Type: application/x-www-form-urlencoded
 client_id={{client_id}}
 &client_secret={{client_secret}}
 &grant_type=client_credentials
-&scope=service:psapi service:leagues service:leagues:ladder
+&scope=service:psapi service:leagues service:leagues:ladder oauth:introspect oauth:revoke
