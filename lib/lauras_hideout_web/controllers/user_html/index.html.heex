@@ -1,0 +1,11 @@
+<h2 class="text-2xl font-bold mb-4">User Information</h2>
+
+<p class="py-1">
+  Logged in as <%= @current_user.username %>
+</p>
+<p class="py-1">
+  First Login: <%= Timex.format!(@current_user.inserted_at, "%Y-%m-%d", :strftime) %>
+</p>
+<p class="py-1">
+  Current access token is valid for <span class="font-bold"><%= @remaining_time %></span>. Logout and Login again to refresh.
+</p>

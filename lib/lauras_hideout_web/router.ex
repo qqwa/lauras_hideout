@@ -29,6 +29,8 @@ defmodule LaurasHideoutWeb.Router do
   scope "/", LaurasHideoutWeb do
     pipe_through [:browser, :require_user]
 
+    get "/user", User, :index
+
     live_session :require_user,
       on_mount: [{LaurasHideoutWeb.Auth, :ensure_user}] do
       live "/stash", StashManagementLive

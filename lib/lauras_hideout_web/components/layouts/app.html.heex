@@ -15,7 +15,10 @@
     <ul class="list-none flex">
       <%= if @current_user do %>
         <li class="p-1 mx-2">
-          Connected as <%= @current_user.username %>
+          Connected as
+          <.link href={~p"/user"} class="underline font-bold">
+            <%= @current_user.username %>
+          </.link>
         </li>
         <li class="border-2 p-1 mx-2 border-indigo-500 rounded-md">
           <.link href={~p"/logout"} method="delete">
