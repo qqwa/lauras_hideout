@@ -93,6 +93,12 @@ defmodule LaurasHideout.Auth do
     Repo.get_by(User, username: username)
   end
 
+  def user_set_admin(user, is_admin) do
+    user
+    |> User.changeset(%{is_admin: is_admin})
+    |> Repo.update()
+  end
+
   @doc """
   Get user by user_session_id and preloads the oauth_token into the
   user struct.

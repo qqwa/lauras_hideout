@@ -15,9 +15,27 @@ defmodule LaurasHideoutWeb.CoreComponents do
   Icons are provided by [heroicons](https://heroicons.com). See `icon/1` for usage.
   """
   use Phoenix.Component
+  use LaurasHideoutWeb, :verified_routes
 
   alias Phoenix.LiveView.JS
   import LaurasHideoutWeb.Gettext
+
+  attr :user, :map, required: true
+  attr :class, :string, default: "underline font-bold"
+
+  def nav_user_link(assigns) do
+    admin_class = if assigns.user.is_admin, do: "text-red-800", else: ""
+    assigns = assign(assigns, :admin_class, admin_class)
+
+    ~H"""
+    <li class="p-1 mx-2">
+      Connected as
+      <.link href={~p"/user"} class={[@admin_class, @class]}>
+        <%= @user.username %>
+      </.link>
+    </li>
+    """
+  end
 
   @doc """
   Renders a modal.

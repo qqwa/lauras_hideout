@@ -14,12 +14,7 @@
   <nav class="flex items-center">
     <ul class="list-none flex">
       <%= if @current_user do %>
-        <li class="p-1 mx-2">
-          Connected as
-          <.link href={~p"/user"} class="underline font-bold">
-            <%= @current_user.username %>
-          </.link>
-        </li>
+        <.nav_user_link user={@current_user} />
         <li class="border-2 p-1 mx-2 border-indigo-500 rounded-md">
           <.link href={~p"/logout"} method="delete">
             Logout

@@ -99,6 +99,17 @@ defmodule LaurasHideoutWeb.Auth do
     end
   end
 
+  def require_admin(conn, _opts) do
+    if conn.assigns.current_user.is_admin do
+      conn
+    else
+      conn
+      |> put_flash(:error, "Not permitted to access this page.")
+      |> redirect(to: ~p"/")
+      |> halt()
+    end
+  end
+
   def on_mount(:ensure_user, _params, session, socket) do
     socket = mount_current_user(socket, session)
 
@@ -108,6 +119,21 @@ defmodule LaurasHideoutWeb.Auth do
       socket =
         socket
         |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
+        |> Phoenix.LiveView.redirect(to: ~p"/")
+
+      {:halt, socket}
+    end
+  end
+
+  def on_mount(:ensure_admin, _params, session, socket) do
+    socket = mount_current_user(socket, session)
+
+    if socket.assigns.current_user.is_admin do
+      {:cont, socket}
+    else
+      socket =
+        socket
+        |> Phoenix.LiveView.put_flash(:error, "Not permitted to access this page.")
         |> Phoenix.LiveView.redirect(to: ~p"/")
 
       {:halt, socket}
