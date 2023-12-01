@@ -1,5 +1,4 @@
 defmodule LaurasHideout.PoeApi.Utils do
-  require Logger
   alias LaurasHideout.Repo
   alias LaurasHideout.PoeApi.Log
   alias LaurasHideout.PoeApi.RateLimit
@@ -23,7 +22,7 @@ defmodule LaurasHideout.PoeApi.Utils do
   end
 
   def get_endpoint(endpoint, user, request) do
-    with {:ok, update_rate_limits} <- check_rate_limits(endpoint, user.token),
+    with {:ok, update_rate_limits} <- check_rate_limits(endpoint, user.oauth_token.access_token),
          {:ok, response} <- request.() do
       # post request tasks
       update_rate_limits.(response.headers)
@@ -33,7 +32,7 @@ defmodule LaurasHideout.PoeApi.Utils do
   end
 
   def log_response(endpoint, user, response) do
-    metadata = %{username: user.username, endpoint: endpoint, status: response.status}
+    metadata = %{user_id: user.id, endpoint: endpoint, status: response.status}
 
     case response.status do
       status when status in [200, 202] ->
@@ -105,6 +104,38 @@ defmodule LaurasHideout.PoeApi.Utils do
   def service_token(),
     do: %{
       username: "__service_token__",
-      token: Application.get_env(:lauras_hideout, :service_token)
+      oauth_token: %{access_token: Application.get_env(:lauras_hideout, :service_token)}
     }
+
+  def is_good_response(reponse) do
+    if status_is_2xx?(reponse.status) do
+      true
+    else
+      get_error(reponse.body)
+    end
+  end
+
+  defp status_is_2xx?(200), do: true
+  defp status_is_2xx?(202), do: true
+  defp status_is_2xx?(_), do: false
+
+  defp get_error(%{"error" => %{"code" => code, "message" => message}}) do
+    {:error, reason: "(#{error_code_to_message(code)}): #{message}"}
+  end
+
+  defp get_error(%{"error" => error, "error_description" => description}) do
+    {:error, reason: "(#{error}): #{description}"}
+  end
+
+  defp error_code_to_message(0), do: "Accepted"
+  defp error_code_to_message(1), do: "Resource not found"
+  defp error_code_to_message(2), do: "Invalid query"
+  defp error_code_to_message(3), do: "Rate limit exceeded"
+  defp error_code_to_message(4), do: "Internal error"
+  defp error_code_to_message(5), do: "Unexpected content type"
+  defp error_code_to_message(6), do: "Forbidden"
+  defp error_code_to_message(7), do: "Temporarily Unavailable"
+  defp error_code_to_message(8), do: "Unauthorized"
+  defp error_code_to_message(9), do: "Method not allowed"
+  defp error_code_to_message(10), do: "Unprocessable Entity"
 end

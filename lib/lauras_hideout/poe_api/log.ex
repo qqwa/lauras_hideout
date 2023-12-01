@@ -7,7 +7,7 @@ defmodule LaurasHideout.PoeApi.Log do
     field :endpoint, :string
     field :message, :string
     field :status, :integer
-    field :username, :string
+    belongs_to :user, LaurasHideout.Auth.Schemas.User
 
     timestamps(updated_at: false)
   end
@@ -15,7 +15,7 @@ defmodule LaurasHideout.PoeApi.Log do
   @doc false
   def changeset(log, attrs) do
     log
-    |> cast(attrs, [:status, :username, :endpoint, :message])
-    |> validate_required([:status, :username, :endpoint])
+    |> cast(attrs, [:status, :user_id, :endpoint, :message])
+    |> validate_required([:status, :user_id, :endpoint])
   end
 end

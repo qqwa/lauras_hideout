@@ -7,6 +7,8 @@ defmodule LaurasHideout.PoeApi.OAuth do
 
   def authorize_url(), do: @base_url <> @authorize_endpoint
 
+  def base_url(), do: @base_url
+
   def get_access_token(%{code: code, code_verifier: code_verifier}) do
     form_map = access_token_form_map(code, code_verifier)
 

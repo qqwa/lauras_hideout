@@ -1,5 +1,5 @@
 defmodule LaurasHideout.StashManagement.AccountStashInfo do
-  use Ecto.Schema
+  use LaurasHideout.Schema
   import Ecto.Changeset
   alias LaurasHideout.Accounts
 

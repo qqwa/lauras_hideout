@@ -1,5 +1,6 @@
 defmodule LaurasHideout.PoeApi do
   import LaurasHideout.PoeApi.Utils
+  require Logger
 
   @doc """
   https://www.pathofexile.com/developer/docs/reference#leagues-list
@@ -9,7 +10,7 @@ defmodule LaurasHideout.PoeApi do
     user = service_token()
 
     request = fn ->
-      client_with_token(user.token)
+      client_with_token(user.oauth_token.access_token)
       |> Req.get(url: endpoint)
     end
 
@@ -24,7 +25,7 @@ defmodule LaurasHideout.PoeApi do
     user = service_token()
 
     request = fn ->
-      client_with_token(user.token)
+      client_with_token(user.oauth_token.access_token)
       |> Req.get(url: "#{endpoint}?id=#{id}")
     end
 
@@ -38,7 +39,7 @@ defmodule LaurasHideout.PoeApi do
     endpoint = "/profile"
 
     request = fn ->
-      client_with_token(user.token)
+      client_with_token(user.oauth_token.access_token)
       |> Req.get(url: endpoint)
     end
 
@@ -52,7 +53,7 @@ defmodule LaurasHideout.PoeApi do
     endpoint = "/account/leagues"
 
     request = fn ->
-      client_with_token(user.token)
+      client_with_token(user.oauth_token.access_token)
       |> Req.get(url: endpoint)
     end
 
@@ -66,7 +67,7 @@ defmodule LaurasHideout.PoeApi do
     endpoint = "/character"
 
     request = fn ->
-      client_with_token(user.token)
+      client_with_token(user.oauth_token.access_token)
       |> Req.get(url: endpoint)
     end
 
@@ -80,7 +81,7 @@ defmodule LaurasHideout.PoeApi do
     endpoint = "/character/"
 
     request = fn ->
-      client_with_token(user.token)
+      client_with_token(user.oauth_token.access_token)
       |> Req.get(url: "#{endpoint}#{character}")
     end
 
@@ -93,8 +94,10 @@ defmodule LaurasHideout.PoeApi do
   def get_account_stashes(user, league) do
     endpoint = "/stash"
 
+    Logger.info(user.oauth_token.access_token)
+
     request = fn ->
-      client_with_token(user.token)
+      client_with_token(user.oauth_token.access_token)
       |> Req.get(url: "#{endpoint}/#{league}")
     end
 
@@ -108,7 +111,7 @@ defmodule LaurasHideout.PoeApi do
     endpoint = "/stash/"
 
     request = fn ->
-      client_with_token(user.token)
+      client_with_token(user.oauth_token.access_token)
       |> Req.get(url: "#{endpoint}#{league}/#{stash_id}")
     end
 
@@ -120,7 +123,7 @@ defmodule LaurasHideout.PoeApi do
     endpoint = "/stash/"
 
     request = fn ->
-      client_with_token(user.token)
+      client_with_token(user.oauth_token.access_token)
       |> Req.get(url: "#{endpoint}#{league}/#{stash_id}/#{substash_id}")
     end
 
@@ -134,7 +137,7 @@ defmodule LaurasHideout.PoeApi do
     endpoint = "/league-account"
 
     request = fn ->
-      client_with_token(user.token)
+      client_with_token(user.oauth_token.access_token)
       |> Req.get(url: "#{endpoint}/#{league}")
     end
 
@@ -148,7 +151,7 @@ defmodule LaurasHideout.PoeApi do
     endpoint = "/item-filter"
 
     request = fn ->
-      client_with_token(user.token)
+      client_with_token(user.oauth_token.access_token)
       |> Req.get(url: "#{endpoint}")
     end
 
@@ -162,7 +165,7 @@ defmodule LaurasHideout.PoeApi do
     endpoint = "/item-filter/"
 
     request = fn ->
-      client_with_token(user.token)
+      client_with_token(user.oauth_token.access_token)
       |> Req.get(url: "#{endpoint}#{filter_id}")
     end
 

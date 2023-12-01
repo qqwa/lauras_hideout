@@ -3,7 +3,8 @@ defmodule LaurasHideoutWeb.Auth do
   import Plug.Conn
   import Phoenix.Controller
 
-  alias LaurasHideout.Accounts
+  require Logger
+  alias LaurasHideout.Auth
 
   @max_age 60 * 60 * 24 * 30
   @remember_me_cookie "session_id"
@@ -17,14 +18,17 @@ defmodule LaurasHideoutWeb.Auth do
   """
   def login(conn, user) do
     conn =
-      with {:ok, session} <- Accounts.create_session(user) do
-        conn
-        |> renew_session()
-        |> put_flash(:info, "Logged in as #{user.username}!")
-        |> put_session(:session_id, session.id)
-        |> put_resp_cookie(@remember_me_cookie, session.id, @remember_me_options)
-      else
-        _ ->
+      case Auth.create_user_session(user) do
+        {:ok, session} ->
+          conn
+          |> renew_session()
+          |> put_flash(:info, "Logged in as #{user.username}!")
+          |> put_session(:session_id, session.id)
+          |> put_resp_cookie(@remember_me_cookie, session.id, @remember_me_options)
+
+        {:error, changeset} ->
+          Logger.warning("Could not create user session for #{user} - #{changeset}")
+
           conn
           |> put_flash(:error, "Something went wrong try again later")
       end
@@ -38,7 +42,7 @@ defmodule LaurasHideoutWeb.Auth do
   """
   def logout(conn) do
     session_id = get_session(conn, :session_id)
-    session_id && Accounts.delete_session(Accounts.get_session(session_id))
+    session_id && Auth.delete_user_session(session_id)
 
     conn
     |> renew_session()
@@ -58,11 +62,11 @@ defmodule LaurasHideoutWeb.Auth do
   @doc """
   Tries to get the current user by looking up the session.
 
-  Returns `nil` if no user/session can be found.
+  Sets `:current_user` to `nil` if no user/session can be found.
   """
   def fetch_current_user(conn, _opts) do
     {session_id, conn} = ensure_session(conn)
-    user = session_id && Accounts.get_user_with_access_token_by_session(session_id)
+    user = session_id && Auth.get_user_with_access_token_by_user_session(session_id)
     assign(conn, :current_user, user)
   end
 
@@ -113,7 +117,7 @@ defmodule LaurasHideoutWeb.Auth do
   defp mount_current_user(socket, session) do
     Phoenix.Component.assign_new(socket, :current_user, fn ->
       if session_id = session["session_id"] do
-        Accounts.get_user_with_access_token_by_session(session_id)
+        Auth.get_user_with_access_token_by_user_session(session_id)
       end
     end)
   end

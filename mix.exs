@@ -51,7 +51,8 @@ defmodule LaurasHideout.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:dotenv_parser, "~> 2.0"},
       {:ex_rated, "~> 2.1"},
-      {:req, "~> 0.4.0"}
+      {:req, "~> 0.4.0"},
+      {:timex, "~> 3.7"}
     ]
   end
 

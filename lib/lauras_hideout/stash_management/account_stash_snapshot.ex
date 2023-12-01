@@ -1,6 +1,6 @@
 defmodule LaurasHideout.StashManagement.AccountStashSnapshot do
   alias LaurasHideout.Accounts
-  use Ecto.Schema
+  use LaurasHideout.Schema
   import Ecto.Changeset
 
   @primary_key false

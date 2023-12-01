@@ -1,4 +1,5 @@
 defmodule LaurasHideoutWeb.StashManagementLive do
+  require Logger
   alias LaurasHideout.StashManagement
   alias LaurasHideoutWeb.StashManagementLive
   use LaurasHideoutWeb, :live_view
@@ -35,14 +36,16 @@ defmodule LaurasHideoutWeb.StashManagementLive do
   end
 
   def handle_event("load_stashes", _params, socket) do
-    if {:ok, stashes} =
-         StashManagement.refresh_account_stashes(
+    case StashManagement.refresh_account_stashes(
            socket.assigns.current_user,
            socket.assigns.selected_league
          ) do
-      {:noreply, assign_account_stashes(socket, stashes)}
-    else
-      {:noreply, put_flash(socket, :error, "Ops something went wrong")}
+      {:ok, stashes} ->
+        {:noreply, assign_account_stashes(socket, stashes)}
+
+      {:error, error} ->
+        Logger.warning(error)
+        {:noreply, put_flash(socket, :error, "Ops something went wrong")}
     end
   end
 

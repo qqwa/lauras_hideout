@@ -11,6 +11,10 @@ config :lauras_hideout,
   ecto_repos: [LaurasHideout.Repo],
   generators: [binary_id: true]
 
+config :lauras_hideout, LaurasHideout.Repo,
+  migration_timestamps: [type: :timestamptz],
+  migration_primary_key: [type: :binary_id]
+
 # Configures the endpoint
 config :lauras_hideout, LaurasHideoutWeb.Endpoint,
   url: [host: "localhost"],
