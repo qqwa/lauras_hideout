@@ -107,11 +107,19 @@ defmodule LaurasHideout.PoeApi.Utils do
       oauth_token: %{access_token: Application.get_env(:lauras_hideout, :service_token)}
     }
 
-  def is_good_response(reponse) do
-    if status_is_2xx?(reponse.status) do
+  def is_good_response({:error, reason}) do
+    {:error, reason: reason}
+  end
+
+  def is_good_response({:ok, %Req.Response{} = response}) do
+    is_good_response(response)
+  end
+
+  def is_good_response(%Req.Response{} = response) do
+    if status_is_2xx?(response.status) do
       true
     else
-      get_error(reponse.body)
+      get_error(response.body)
     end
   end
 

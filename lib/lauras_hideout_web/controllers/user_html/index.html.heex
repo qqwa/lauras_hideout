@@ -7,5 +7,10 @@
   First Login: <%= Timex.format!(@current_user.inserted_at, "%Y-%m-%d", :strftime) %>
 </p>
 <p class="py-1">
-  Current access token is valid for <span class="font-bold"><%= @remaining_time %></span>. Logout and Login again to refresh.
+  <%= if @remaining_time do %>
+    Current access token is valid for <span class="font-bold"><%= @remaining_time %></span>.
+  <% else %>
+    No valid access token.
+  <% end %>
+  Logout and Login again to refresh.
 </p>

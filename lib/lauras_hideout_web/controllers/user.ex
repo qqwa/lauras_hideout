@@ -6,19 +6,23 @@ defmodule LaurasHideoutWeb.User do
   end
 
   def assign_remaining_time(conn) do
-    expire = conn.assigns.current_user.oauth_token.expiration_date
-    now = Timex.now()
-    days = Timex.diff(expire, now, :days)
-
     remaining =
-      if days < 3 do
-        Timex.diff(expire, now, :hours)
-        |> Timex.Duration.from_hours()
-        |> Timex.format_duration(:humanized)
+      if conn.assigns.current_user.oauth_token do
+        expire = conn.assigns.current_user.oauth_token.expiration_date
+        now = Timex.now()
+        days = Timex.diff(expire, now, :days)
+
+        if days < 3 do
+          Timex.diff(expire, now, :hours)
+          |> Timex.Duration.from_hours()
+          |> Timex.format_duration(:humanized)
+        else
+          days
+          |> Timex.Duration.from_days()
+          |> Timex.format_duration(:humanized)
+        end
       else
-        days
-        |> Timex.Duration.from_days()
-        |> Timex.format_duration(:humanized)
+        nil
       end
 
     assign(conn, :remaining_time, remaining)

@@ -1,5 +1,6 @@
 defmodule LaurasHideout.Auth do
   import Ecto.Query
+  require Logger
   alias LaurasHideout.Auth.UserSession
   alias LaurasHideout.Repo
   alias LaurasHideout.Auth.OAuth
@@ -76,12 +77,19 @@ defmodule LaurasHideout.Auth do
     old_access_token = Repo.get(OAuthToken, params["user_id"])
 
     if old_access_token do
-      # TODO: revoke old access token
+      delete_access_token(params["user_id"])
     end
 
     %OAuthToken{}
     |> OAuthToken.changeset(params)
     |> Repo.insert(on_conflict: :replace_all, conflict_target: :user_id)
+  end
+
+  def delete_access_token(user_id) do
+    oauth_token = Repo.get_by(OAuthToken, user_id: user_id)
+    OAuth.revoke_access_token(oauth_token)
+    Repo.delete(oauth_token)
+    Logger.debug("Revoked access token for user with id: #{user_id}")
   end
 
   @doc """
@@ -109,7 +117,7 @@ defmodule LaurasHideout.Auth do
     query =
       from u in User,
         join: s in assoc(u, :sessions),
-        join: t in assoc(u, :oauth_token),
+        left_join: t in assoc(u, :oauth_token),
         where: s.id == ^user_session_id,
         preload: [:oauth_token]
 

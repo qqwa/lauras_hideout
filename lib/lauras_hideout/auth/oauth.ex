@@ -1,10 +1,21 @@
 defmodule LaurasHideout.Auth.OAuth do
+  alias LaurasHideout.Auth.OAuthToken
   alias LaurasHideout.PoeApi
   alias LaurasHideout.Repo
   alias LaurasHideout.Auth.OAuthChallenge
   @base_url "https://www.pathofexile.com"
   @authorize_endpoint "/oauth/authorize"
   @access_token_endpoint "/oauth/token"
+  @revoke_endpoint "/oauth/token/revoke"
+
+  def revoke_access_token(%OAuthToken{} = oauth_token) do
+    user = PoeApi.Utils.service_token()
+
+    PoeApi.Utils.client_with_token(user.oauth_token.access_token)
+    |> Req.Request.merge_options(base_url: @base_url, form: [token: oauth_token.access_token])
+    |> Req.post(url: @revoke_endpoint)
+    |> PoeApi.Utils.is_good_response()
+  end
 
   def authorization_url(challenge) do
     "#{@base_url}#{@authorize_endpoint}?#{authorization_url_query(challenge)}"

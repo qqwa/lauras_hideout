@@ -44,13 +44,15 @@ defmodule LaurasHideoutWeb.Auth do
     session_id = get_session(conn, :session_id)
     session_id && Auth.delete_user_session(session_id)
 
+    if conn.assigns.current_user do
+      Auth.delete_access_token(conn.assigns.current_user.id)
+    end
+
     conn
     |> renew_session()
     |> delete_resp_cookie(@remember_me_cookie)
     |> put_flash(:info, "Logged out!")
     |> redirect(to: ~p"/")
-
-    conn
   end
 
   defp renew_session(conn) do
